@@ -37,8 +37,10 @@ public class ProductController {
     @DeleteMapping("{id}")
     public void deleteProductById(){
     }
+    //@RequestBody converts whatever is in the request body to GenericProductDto
     @PostMapping
-    public void createProduct(){
+    public GenericProductDto createProduct(@RequestBody GenericProductDto product){
+        return productService.createProduct(product);
     }
     @PutMapping("{id}")
     public void updateProductById(){
