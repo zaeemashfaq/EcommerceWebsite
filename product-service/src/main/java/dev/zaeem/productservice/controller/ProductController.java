@@ -6,6 +6,7 @@ import dev.zaeem.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,7 +36,8 @@ public class ProductController {
         return productService.getProductById(id);
     }
     @DeleteMapping("{id}")
-    public void deleteProductById(){
+    public GenericProductDto deleteProductById(@PathVariable("id") Long id){
+        return productService.deleteProductById(id);
     }
     //@RequestBody converts whatever is in the request body to GenericProductDto
     @PostMapping
@@ -43,6 +45,7 @@ public class ProductController {
         return productService.createProduct(product);
     }
     @PutMapping("{id}")
-    public void updateProductById(){
+    public GenericProductDto updateProductById(@PathVariable("id") Long id,GenericProductDto product){
+        return productService.updateProductById(id,product);
     }
 }
