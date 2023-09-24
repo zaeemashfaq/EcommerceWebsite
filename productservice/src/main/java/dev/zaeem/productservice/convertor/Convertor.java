@@ -1,5 +1,6 @@
 package dev.zaeem.productservice.convertor;
 
+import dev.zaeem.productservice.dtos.GenericCategoryDto;
 import dev.zaeem.productservice.dtos.GenericProductDto;
 import dev.zaeem.productservice.models.*;
 //import dev.zaeem.productservice.models.Product;
@@ -48,5 +49,10 @@ public class Convertor {
         genericProduct.setCategory(product.getCategory().getName());
         genericProduct.setCurrency(product.getCurrency());
         return genericProduct;
+    }
+    public GenericCategoryDto convertCategoryToGenericCategory(Category category){
+        GenericCategoryDto genericCategory = new GenericCategoryDto();
+        genericCategory.setName(category.getName());
+        return genericCategory;
     }
 }
