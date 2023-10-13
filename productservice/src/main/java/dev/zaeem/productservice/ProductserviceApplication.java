@@ -1,7 +1,7 @@
 package dev.zaeem.productservice;
 
-import dev.zaeem.productservice.inheritancedemo.joinedtable.MentorRepository;
-import dev.zaeem.productservice.inheritancedemo.joinedtable.UserRepository;
+//import dev.zaeem.productservice.inheritancedemo.joinedtable.MentorRepository;
+//import dev.zaeem.productservice.inheritancedemo.joinedtable.UserRepository;
 import dev.zaeem.productservice.models.Category;
 import dev.zaeem.productservice.models.Price;
 import dev.zaeem.productservice.models.Product;
