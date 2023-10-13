@@ -16,6 +16,7 @@ public class Product extends BaseModel {
     //@Column(name = "category")
     @ManyToOne(cascade = {CascadeType.PERSIST})
     @JoinTable(name = "category_id")
+    @JoinColumn(name = "category_id",referencedColumnName = "id")
     private Category category;
     private double price;
     private String currency;

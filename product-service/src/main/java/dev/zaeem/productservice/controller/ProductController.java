@@ -29,7 +29,7 @@ public class ProductController {
     private ProductService productService;
     private SelfProductServiceImpl selfProductService;
     //constructor injection. This is recommended practice.
-    public ProductController(@Qualifier("fakeStoreProductService") ProductService productService, SelfProductServiceImpl selfProductService){ //if there are more than one implementation for the ProductService interface,
+    public ProductController(@Qualifier("selfProductServiceImpl") ProductService productService, SelfProductServiceImpl selfProductService){ //if there are more than one implementation for the ProductService interface,
         //Spring wouldn't know which one to use. @Qualifier tells Spring which one to use!
         this.productService = productService;
         this.selfProductService = selfProductService;
