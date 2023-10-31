@@ -1,4 +1,4 @@
-package dev.zaeem.NotificationService;
+package dev.zaeem.NotificationService.HelloWorld;
 
 public class HelloWorld {
     public static void main(String[] args) {
