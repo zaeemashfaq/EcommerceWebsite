@@ -8,9 +8,11 @@ import lombok.Setter;
 @MappedSuperclass
 @Getter
 @Setter
-public class BaseModel {
+public abstract class BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false,updatable = false,unique = true)
     private long id;
+
+//    public abstract int compareTo(Notification notification);
 }

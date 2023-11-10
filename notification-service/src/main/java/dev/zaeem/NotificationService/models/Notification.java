@@ -9,12 +9,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notification extends BaseModel{
+public class Notification extends BaseModel implements Comparable<Notification>{
     private long userId;
     private Channel notificationChannel;
     private long requestingServiceId;
@@ -22,6 +24,7 @@ public class Notification extends BaseModel{
     private DeliveryStatus deliveryStatus;
     @OneToOne(cascade = {CascadeType.PERSIST})
     private Message message;
+    private Instant instant;
     public static Notification from(SendNotificationRequestDto requestDto){
         Notification notification = new Notification();
         notification.setRequestingServiceId(requestDto.getRequestingServiceId());
@@ -33,6 +36,12 @@ public class Notification extends BaseModel{
         message.setMessageContent(requestDto.getMessageContent());
         notification.setMessage(message);
         notification.setUserId(requestDto.getUserId());
+        notification.setInstant(Instant.now());
         return notification;
+    }
+
+    @Override
+    public int compareTo(Notification notification) {
+        return (this.instant.compareTo(notification.instant));
     }
 }

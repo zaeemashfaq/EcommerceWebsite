@@ -1,7 +1,7 @@
 package dev.zaeem.NotificationService.models;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,4 +11,10 @@ import lombok.Setter;
 public class Message extends BaseModel {
     private String messageTitle;
     private String messageContent;
+    public static Message from(Notification notification){
+        Message message = new Message();
+        message.setMessageTitle(notification.getMessage().getMessageTitle());
+        message.setMessageContent(notification.getMessage().getMessageContent());
+        return message;
+    }
 }

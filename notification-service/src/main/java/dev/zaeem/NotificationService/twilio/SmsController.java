@@ -16,11 +16,11 @@ public class SmsController {
     @GetMapping(value = "/sendSMS")
     public ResponseEntity<String> sendSMS(String fromNumber, String toNumber, String message) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter twilio account sid");
+        System.out.println("Enter twilio account sid: ");
         String twilioAccountSid = sc.nextLine();
-        System.out.println("Enter twilio auth token");
+        System.out.println("Enter twilio auth token: ");
         String twilioAuthToken = sc.nextLine();
-        Twilio.init((twilioAccountSid), System.getenv(twilioAuthToken));
+        Twilio.init(twilioAccountSid, twilioAuthToken);
 //        Twilio.init(System.getenv("TWILIO_ACCOUNT_SID"), System.getenv("TWILIO_AUTH_TOKEN"));
 
         Message.creator(new PhoneNumber(toNumber),
@@ -29,6 +29,6 @@ public class SmsController {
 //        Message.creator(new PhoneNumber("<TO number - ie your cellphone>"),
 //                new PhoneNumber("<FROM number - ie your Twilio number"), "Hello from Twilio 📞").create();
 
-        return new ResponseEntity<String>("Message sent successfully", HttpStatus.OK);
+        return new ResponseEntity<String>("Message sent successfully to number: "+toNumber, HttpStatus.OK);
     }
 }
