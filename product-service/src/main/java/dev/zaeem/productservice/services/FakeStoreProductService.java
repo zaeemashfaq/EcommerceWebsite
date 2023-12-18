@@ -3,8 +3,9 @@ package dev.zaeem.productservice.services;
 import dev.zaeem.productservice.dtos.FakeStoreProductDto;
 import dev.zaeem.productservice.dtos.GenericProductDto;
 import dev.zaeem.productservice.exceptions.NotFoundException;
+import dev.zaeem.productservice.exceptions.UnauthorizedUserException;
+import dev.zaeem.productservice.security.models.JwtObject;
 import dev.zaeem.productservice.thirdpartyclients.productservice.fakestore.FakeStoreProductServiceClient;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,7 +30,7 @@ public class FakeStoreProductService implements ProductService{
         return convertFakeStoreToGenericProductDto(fakeStoreProductServiceClient.getProductById(id));
     }
     @Override
-    public GenericProductDto getProductById(UUID uuid) throws NotFoundException{
+    public GenericProductDto getProductById(JwtObject authTokenObj, UUID uuid) throws NotFoundException{
         return null;
     }
     @Override
@@ -37,7 +38,7 @@ public class FakeStoreProductService implements ProductService{
         return convertFakeStoreToGenericProductDto(fakeStoreProductServiceClient.deleteProductById(id));
     }
     @Override
-    public GenericProductDto deleteProductById(UUID id) throws NotFoundException{
+    public GenericProductDto deleteProductById(UUID id,long userId) throws NotFoundException, UnauthorizedUserException {
         return null;
     }
     @Override
@@ -49,7 +50,7 @@ public class FakeStoreProductService implements ProductService{
         return convertFakeStoreToGenericProductDto(fakeStoreProductServiceClient.updateProductById(id,product));
     }
     @Override
-    public GenericProductDto updateProductById(UUID id, GenericProductDto product) throws NotFoundException{
+    public GenericProductDto updateProductById(UUID id, GenericProductDto product,long userId) throws NotFoundException, UnauthorizedUserException{
         return null;
     }
     private GenericProductDto convertFakeStoreToGenericProductDto(FakeStoreProductDto fakeStoreProductDto){

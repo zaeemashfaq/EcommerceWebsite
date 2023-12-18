@@ -1,12 +1,14 @@
 package dev.zaeem.productservice.services;
 
 import dev.zaeem.productservice.dtos.GenericProductDto;
+import dev.zaeem.productservice.exceptions.InactiveSessionException;
 import dev.zaeem.productservice.exceptions.NotFoundException;
+import dev.zaeem.productservice.exceptions.UnauthorizedUserException;
 import dev.zaeem.productservice.models.Category;
 import dev.zaeem.productservice.models.Product;
 import dev.zaeem.productservice.repositories.CategoryRepository;
 import dev.zaeem.productservice.repositories.ProductRepository;
-import org.aspectj.weaver.ast.Not;
+import dev.zaeem.productservice.security.models.JwtObject;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -47,7 +49,7 @@ public class SelfProductServiceImpl implements ProductService {
         return null;
     }
     @Override
-    public GenericProductDto getProductById(UUID id)throws NotFoundException {
+    public GenericProductDto getProductById(JwtObject authTokenObj,UUID id)throws NotFoundException {
         Optional<Product> fetchedProduct = productRepository.findById(id);
         if(fetchedProduct.isEmpty()){
             throw new NotFoundException("The product with id: "+id.toString()+" does not exist!");
@@ -61,13 +63,17 @@ public class SelfProductServiceImpl implements ProductService {
         return null;
     }
     @Override
-    public GenericProductDto deleteProductById(UUID id) throws NotFoundException{
-        Optional<Product> fetchedProduct = productRepository.findById(id);
-        if(fetchedProduct.isEmpty()){
-            throw new NotFoundException("The product with id: "+id.toString()+" does not exist!");
+    public GenericProductDto deleteProductById(UUID productId,long userId) throws NotFoundException, UnauthorizedUserException{
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if(productOptional.isEmpty()){
+            throw new NotFoundException("The product with id: "+productId.toString()+" does not exist!");
         }
-        GenericProductDto genericProduct = convertor.convertProductToGenericProductDto(fetchedProduct.get());
-        productRepository.deleteById(id);
+        Product product = productOptional.get();
+        if(product.getCreator()!=userId){
+            throw new UnauthorizedUserException("Not authorized to delete.");
+        }
+        GenericProductDto genericProduct = convertor.convertProductToGenericProductDto(product);
+        productRepository.deleteById(productId);
         return genericProduct;
     };
     @Override
@@ -82,12 +88,15 @@ public class SelfProductServiceImpl implements ProductService {
         return null;
     }
     @Override
-    public GenericProductDto updateProductById(UUID id, GenericProductDto genericProduct) throws NotFoundException {
-        Optional<Product> fetchedProduct = productRepository.findById(id);
+    public GenericProductDto updateProductById(UUID productId, GenericProductDto genericProduct,long userId) throws NotFoundException, UnauthorizedUserException {
+        Optional<Product> fetchedProduct = productRepository.findById(productId);
         if(fetchedProduct.isEmpty()){
-            throw new NotFoundException("The product with id: "+id.toString()+" does not exist!");
+            throw new NotFoundException("The product with id: "+productId.toString()+" does not exist!");
         }
         Product product = fetchedProduct.get();
+        if(product.getCreator()!=userId){
+            throw new UnauthorizedUserException("Not authorized to delete.");
+        }
         product.setTitle(genericProduct.getTitle());
         product.setDescription(genericProduct.getDescription());
         product.setImage(genericProduct.getImage());

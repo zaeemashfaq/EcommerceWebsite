@@ -20,6 +20,7 @@ public class Product extends BaseModel {
     private Category category;
     private double price;
     private String currency;
+    private long creator;
 //    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
 //    //This will cause the price to persist even if we don't write code for it
 //    private Price price;
