@@ -69,6 +69,31 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.3</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.3</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+		<groupId>io.jsonwebtoken</groupId>
+		<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+		<version>0.12.3</version>
+		<scope>runtime</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -83,6 +108,14 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<!-- Pass environment variables to the application -->
+					<!--
+					<jvmArguments>
+						<jvmArgument>-DAWS_DB_URL=${AWS_DB_URL}</jvmArgument>
+						<jvmArgument>-DAWS_DB_USERNAME=${AWS_DB_USERNAME}</jvmArgument>
+						<jvmArgument>-DAWS_DB_PASSWORD=${AWS_DB_PASSWORD}</jvmArgument>
+					</jvmArguments>
+					-->
 				</configuration>
 			</plugin>
 		</plugins>

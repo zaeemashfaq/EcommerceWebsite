@@ -26,4 +26,7 @@ public class User extends BaseModel{
     @ManyToMany
     @JsonIgnore
     private Set<Role> roles = new HashSet<>();
+    public void add(Role role){
+        this.roles.add(role);
+    }
 }

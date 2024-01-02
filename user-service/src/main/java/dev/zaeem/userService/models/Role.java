@@ -12,3 +12,10 @@ import lombok.Setter;
 public class Role extends BaseModel{
     private String role;
 }
+
+//@Getter
+//public enum Role {
+//    BUYER,
+//    SELLER,
+//    ADMIN
+//}
