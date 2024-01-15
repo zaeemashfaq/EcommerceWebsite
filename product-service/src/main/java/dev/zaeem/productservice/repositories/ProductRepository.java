@@ -1,6 +1,8 @@
 package dev.zaeem.productservice.repositories;
 
 import dev.zaeem.productservice.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +12,9 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
+
+    public Optional<List<Product>> findAllByTitleContainingIgnoreCase(String searchText);
+    public Page<Product> findAllByTitleContainingOrderByTitle(String searchText, Pageable pageable);
     <S extends Product> S save (S entity);
     List<Product> findAll();
     Optional<Product> findById(UUID uuid);

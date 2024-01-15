@@ -6,6 +6,7 @@ import dev.zaeem.productservice.exceptions.NotFoundException;
 import dev.zaeem.productservice.exceptions.UnauthorizedUserException;
 import dev.zaeem.productservice.security.models.JwtObject;
 import dev.zaeem.productservice.thirdpartyclients.productservice.fakestore.FakeStoreProductServiceClient;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,8 +14,14 @@ import java.util.*;
 @Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService{
     private FakeStoreProductServiceClient fakeStoreProductServiceClient;
-    public FakeStoreProductService(FakeStoreProductServiceClient fakeStoreProductServiceClient){
+    private RedisTemplate<String ,Object> redisTemplate;
+//    String -> datatype of KEY
+//    KEY can be something like 1_18Dec_10AM where 1 is the product id
+//    Object -> datatype of VALUE
+    public FakeStoreProductService(FakeStoreProductServiceClient fakeStoreProductServiceClient,
+                                   RedisTemplate<String ,Object> redisTemplate){
         this.fakeStoreProductServiceClient = fakeStoreProductServiceClient;
+        this.redisTemplate = redisTemplate;
     }
     public List<GenericProductDto>  getAllProducts() throws NotFoundException{
         List<GenericProductDto> list = new ArrayList<>();
@@ -27,7 +34,15 @@ public class FakeStoreProductService implements ProductService{
     @Override
     public GenericProductDto getProductById(Long id) throws NotFoundException{
         //return new Product();
-        return convertFakeStoreToGenericProductDto(fakeStoreProductServiceClient.getProductById(id));
+        GenericProductDto genericProductDto = (GenericProductDto) redisTemplate.opsForHash().get("PRODUCTS",id);
+        if(genericProductDto!=null){
+            return genericProductDto;
+        }
+        else {
+            genericProductDto = convertFakeStoreToGenericProductDto(fakeStoreProductServiceClient.getProductById(id));
+            redisTemplate.opsForHash().put("PRODUCTS",id,genericProductDto);
+            return genericProductDto;
+        }
     }
     @Override
     public GenericProductDto getProductById(JwtObject authTokenObj, UUID uuid) throws NotFoundException{

@@ -12,6 +12,7 @@ import org.hibernate.engine.internal.Cascade;
 public class Product extends BaseModel {
     private String title;
     private String description;
+    @Column(length = 1024)
     private String image;
     //@Column(name = "category")
     @ManyToOne(cascade = {CascadeType.PERSIST})
