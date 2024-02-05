@@ -102,6 +102,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<!--
+					<environmentVariables>
+						<AWS_DB_URL>${AWS_DB_URL}</AWS_DB_URL>
+					</environmentVariables>
+					-->
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
