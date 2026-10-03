@@ -23,6 +23,7 @@ public class GenericProductDto implements Serializable {
     private String currency;
     public static GenericProductDto from(Product product){
         GenericProductDto genericProduct = new GenericProductDto();
+        genericProduct.setId(product.getUuid().toString());
         genericProduct.setTitle(product.getTitle());
         genericProduct.setDescription(product.getDescription());
         genericProduct.setCurrency(product.getCurrency());
