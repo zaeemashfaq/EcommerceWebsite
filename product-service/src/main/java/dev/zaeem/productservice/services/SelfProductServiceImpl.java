@@ -9,8 +9,10 @@ import dev.zaeem.productservice.models.Product;
 import dev.zaeem.productservice.repositories.CategoryRepository;
 import dev.zaeem.productservice.repositories.ProductRepository;
 import dev.zaeem.productservice.security.models.JwtObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import dev.zaeem.productservice.convertor.Convertor;
 
@@ -19,18 +21,30 @@ import java.util.*;
 @Primary
 @Service("selfProductServiceImpl")
 public class SelfProductServiceImpl implements ProductService {
+    //Redis hash holding cached products, keyed by product UUID
+    private static final String PRODUCT_CACHE = "SELF_PRODUCTS";
     private RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
     private Convertor convertor;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    @Value("${product.cache.enabled}")
+    private boolean cacheEnabled;
 
     public SelfProductServiceImpl(RestTemplateBuilder restTemplateBuilder, Convertor convertor,
                                   ProductRepository productRepository,
-                                  CategoryRepository categoryRepository){
+                                  CategoryRepository categoryRepository,
+                                  RedisTemplate<String, Object> redisTemplate){
         this.restTemplateBuilder = restTemplateBuilder;
         this.convertor = convertor;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.redisTemplate = redisTemplate;
+    }
+    private void evictFromCache(UUID productId){
+        if(cacheEnabled){
+            redisTemplate.opsForHash().delete(PRODUCT_CACHE, productId.toString());
+        }
     }
     @Override
     public List<GenericProductDto> getAllProducts() throws NotFoundException{
@@ -50,12 +64,23 @@ public class SelfProductServiceImpl implements ProductService {
     }
     @Override
     public GenericProductDto getProductById(JwtObject authTokenObj,UUID id)throws NotFoundException {
+        //Cache-aside: serve from Redis if present, else load from MySQL and populate the cache
+        if(cacheEnabled){
+            GenericProductDto cachedProduct =
+                    (GenericProductDto) redisTemplate.opsForHash().get(PRODUCT_CACHE, id.toString());
+            if(cachedProduct!=null){
+                return cachedProduct;
+            }
+        }
         Optional<Product> fetchedProduct = productRepository.findById(id);
         if(fetchedProduct.isEmpty()){
             throw new NotFoundException("The product with id: "+id.toString()+" does not exist!");
         }
         Product product = fetchedProduct.get();
         GenericProductDto genericProductDto = convertor.convertProductToGenericProductDto(product);
+        if(cacheEnabled){
+            redisTemplate.opsForHash().put(PRODUCT_CACHE, id.toString(), genericProductDto);
+        }
         return genericProductDto;
     }
     @Override
@@ -74,6 +99,7 @@ public class SelfProductServiceImpl implements ProductService {
         }
         GenericProductDto genericProduct = convertor.convertProductToGenericProductDto(product);
         productRepository.deleteById(productId);
+        evictFromCache(productId);
         return genericProduct;
     };
     @Override
@@ -132,6 +158,7 @@ public class SelfProductServiceImpl implements ProductService {
             product.setCategory(category);
         }
         productRepository.save(product);
+        evictFromCache(productId);
         return convertor.convertProductToGenericProductDto(product);
     }
 }

@@ -8,19 +8,19 @@ services:
       MYSQL_USER: serviceAdmin
       MYSQL_PASSWORD: serviceAdmin
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT:-3306}:3306"
     volumes:
       - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysql", "-h", "127.0.0.1", "-userviceAdmin", "-pserviceAdmin", "-e", "SELECT 1"]
       interval: 5s
       retries: 20
 
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
 
   rabbitmq:
     image: rabbitmq:3-management
