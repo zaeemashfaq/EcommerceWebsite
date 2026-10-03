@@ -13,6 +13,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ public class AuthenticationService {
     private SessionRepository sessionRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     public AuthenticationService(UserRepository userRepository, SessionRepository sessionRepository,
                                  BCryptPasswordEncoder bCryptPasswordEncoder,
@@ -52,8 +55,7 @@ public class AuthenticationService {
             return null;
         }
         MacAlgorithm alg = Jwts.SIG.HS256;
-        String secretKey = "JWT_SECRET_KEY_JWT_SECRET_KEY_JWT_SECRET_KEY";
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
 
 // Create the compact JWS:
@@ -119,8 +121,7 @@ public class AuthenticationService {
             return JwtTokenDto.from(user,session.getSessionStatus());
         }
 //        token = session.getToken();
-        String secretKey = "JWT_SECRET_KEY_JWT_SECRET_KEY_JWT_SECRET_KEY";
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 //        Jws<Claims> claimsJws = Jwts.parser().build().parseSignedClaims(token);
         Jws<Claims> claimsJws = Jwts.parser()
                 .setSigningKey(key) // Set the signing key for verification
