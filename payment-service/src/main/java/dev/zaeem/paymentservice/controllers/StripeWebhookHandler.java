@@ -10,6 +10,7 @@ import com.stripe.net.Webhook;
 import dev.zaeem.paymentservice.models.EventStatus;
 import dev.zaeem.paymentservice.models.PaymentEvent;
 import dev.zaeem.paymentservice.repository.PaymentEventRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,6 +20,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/stripepaymenthook")
 public class StripeWebhookHandler {
+    @Value("${stripe.endpoint.secret}")
+    String endpointSecret;
+    @Value("${stripe.key.secret}")
+    String apiKey;
     PaymentEventRepository paymentEventRepository;
     // Replace this endpoint secret with your endpoint's unique secret
     // If you are testing with the CLI, find the secret by running 'stripe listen'
@@ -31,8 +36,7 @@ public class StripeWebhookHandler {
     @PostMapping("/")
     public void receiveUpdate(@RequestBody String payload, @RequestHeader Map<String, String> headers ){
         System.out.println("Webhook request received!");
-        Stripe.apiKey = System.getenv("STRIPE_KEY_SECRET");
-        String endpointSecret = System.getenv("STRIPE_ENDPOINT_SECRET");
+        Stripe.apiKey = apiKey;
         Event event = null;
         try {
             event = ApiResource.GSON.fromJson(payload, Event.class);

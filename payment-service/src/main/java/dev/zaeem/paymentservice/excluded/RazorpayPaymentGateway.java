@@ -1,4 +1,4 @@
-package dev.zaeem.paymentservice.disabled;
+package dev.zaeem.paymentservice.excluded;
 import com.razorpay.PaymentLink;
 import dev.zaeem.paymentservice.paymentgateway.PaymentGateway;
 import org.json.JSONObject;
@@ -17,7 +17,7 @@ public class RazorpayPaymentGateway implements PaymentGateway {
         this.razorpayClient = razorpayClient;
     }
     @Override
-    public String generatePaymentLink(String orderId, String name,String email,
+    public String generatePaymentLink(String orderId, String productName, String name, String email,
                                       String phoneNo, Long amount)  {
         try{
             JSONObject paymentLinkRequest = new JSONObject();
@@ -27,10 +27,10 @@ public class RazorpayPaymentGateway implements PaymentGateway {
 //        paymentLinkRequest.put("first_min_partial_amount",100);
             paymentLinkRequest.put("expire_by", (Instant.now().toEpochMilli()+300000)/1000);
             paymentLinkRequest.put("reference_id",orderId);
-            paymentLinkRequest.put("description","Payment for policy no #23456");
+            paymentLinkRequest.put("description","Payment for " + productName);
             JSONObject customer = new JSONObject();
-            customer.put("name",phoneNo);
-            customer.put("contact",name);
+            customer.put("name",name);
+            customer.put("contact",phoneNo);
             customer.put("email",email);
             paymentLinkRequest.put("customer",customer);
             JSONObject notify = new JSONObject();
@@ -39,7 +39,7 @@ public class RazorpayPaymentGateway implements PaymentGateway {
             paymentLinkRequest.put("notify",notify);
             paymentLinkRequest.put("reminder_enable",true);
             JSONObject notes = new JSONObject();
-            notes.put("policy_name","Jeevan Bima");
+            notes.put("order_id",orderId);
             paymentLinkRequest.put("notes",notes);
             paymentLinkRequest.put("callback_url","https://example-callback-url.com/");
             paymentLinkRequest.put("callback_method","get");

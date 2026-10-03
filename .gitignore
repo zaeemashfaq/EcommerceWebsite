@@ -1,0 +1,13 @@
+# Build output
+target/
+*.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Local secrets / environment
+.env
+*.pem

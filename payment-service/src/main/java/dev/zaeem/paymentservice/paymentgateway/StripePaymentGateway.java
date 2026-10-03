@@ -8,6 +8,7 @@ import com.stripe.param.PriceCreateParams;
 import dev.zaeem.paymentservice.models.EventStatus;
 import dev.zaeem.paymentservice.models.PaymentEvent;
 import dev.zaeem.paymentservice.repository.PaymentEventRepository;
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import java.util.Map;
 @Service
 public class StripePaymentGateway implements PaymentGateway{
     PaymentEventRepository paymentEventRepository;
+    @Value("${stripe.key.secret}")
+    String apiKey;
     public StripePaymentGateway(PaymentEventRepository paymentEventRepository){
         this.paymentEventRepository = paymentEventRepository;
     }
@@ -33,7 +36,7 @@ public class StripePaymentGateway implements PaymentGateway{
             // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 
-            Stripe.apiKey = System.getenv("STRIPE_KEY_SECRET");
+            Stripe.apiKey = apiKey;
             PriceCreateParams priceParams =
                     PriceCreateParams.builder()
                             .setCurrency("inr")
@@ -77,6 +80,7 @@ public class StripePaymentGateway implements PaymentGateway{
             paymentEventRepository.save(paymentEvent);
             System.out.println("Payment Link URL: "+paymentLink.getUrl());
             System.out.println("Stripe id: "+paymentLink.getId());
+            ResponseEntity<String> response = new ResponseEntity<>(paymentLink.getUrl(), HttpStatus.OK);
             return paymentLink.getUrl();
         }
         catch (Exception e){
